@@ -8,6 +8,7 @@
       onSubmit callback
       disableDuplicateSecondaryDepartment callback,...
     */
+   
    var dpt1=document.getElementById("department1");
    var dpt2=document.getElementById("department2");
    var submitButton=document.getElementById("submit");
