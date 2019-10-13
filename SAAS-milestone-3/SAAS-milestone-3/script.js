@@ -1,83 +1,87 @@
 // This is a closure function https://medium.com/javascript-scene/master-the-javascript-interview-what-is-a-closure-b2f0d2152b36
 (function() {
+
+  let input_fields = document.getElementsByTagName("input");
+  let name_field = input_fields.item('name');
+  let phno_field = input_fields[1];
+  let email_field = input_fields[2];
+
+  let select_fields = document.getElementsByTagName("select");
+  let dept1_field = select_fields[0];
+  let dept2_field = select_fields[1];
+
   var initialize = function() {
-     
     /*
       1. Add all your event bindings here. Please avoid binding events inline and add your event listeners here.
-
       onSubmit callback
       disableDuplicateSecondaryDepartment callback,...
     */
-   
-   var dpt1=document.getElementById("department1");
-   var dpt2=document.getElementById("department2");
-   var submitButton=document.getElementById("submit");
-   submitButton.addEventListener("click",onSubmit);
-   dpt1.addEventListener("change",disableDuplicateSecondaryDepartment);
 
+    var reg_form = document.forms.item(0); 
+    reg_form.addEventListener('submit', onSubmit);
+
+    dept1_field.addEventListener('change', disableDuplicateSecondaryDepartment);
+    
   };
 
-  var disableDuplicateSecondaryDepartment = function(event) {
+  var disableDuplicateSecondaryDepartment = function() {
     // 2. in department2, Should disable the option selected in department1
-    var dpt1=document.getElementById("department1");
-    var seldept=dpt1.options[dpt1.selectedIndex].value;
-    var op = document.getElementById("department2");
-    for (var i = 0; i < op.length; i++)
-    {
-      if (op[i].value == seldept)
-     {
-        op[i].disabled=true;
-     }
-     else
-     {
-      op[i].disabled=false;
-     }
 
+    for(let i=0;i<dept2_field.length;i+=1)
+    {
+      if(dept2_field[i].value===dept1_field.value)
+        {
+          dept2_field[i].disabled=true;
+        }
+      else
+        {
+          dept2_field[i].disabled=false;
+        }
     }
-}
+    
+  }
 
   var constructData = function() {
     var data = {};
 
     // 3. Construct data from the form here. Please ensure that the keys are the names of input elements
-    var text=document.getElementById("name");
-    var phno=document.getElementById("number");
-    var email=document.getElementById("email");
-    var dpt1=document.getElementById("department1");
-    var dpt2=document.getElementById("department2");
-    var data = {name:text.value,phno:number.value,emailaddress:email.value,department1:dpt1.value,department2:dpt2.value};
+
+    data[name_field.name]=name_field.value;
+    data[phno_field.name]=phno_field.value;
+    data[email_field.name]=email_field.value;
+    data[dept1_field.name]=dept1_field.value;
+    data[dept2_field.name]=dept2_field.value;
 
     return data;
   }
 
   var validateResults = function(data) {
     var isValid = true;
-  // 4. Check if the data passes all the validations here
-    var emailId=/^([A-Za-z0-9_\-\.])+@college.edu$/;
-    if (data["name"].length>100)
-    {
+
+    // 4. Check if the data passes all the validations here
+    var special_chars = /[ !#$%^&*()_+\-=\[\]{};':"\\|,<>\/?]/;
+
+    if(data[name_field.name].length>100){
       isValid=false;
-    }
-    else if(data["phno"].length!=10)
-    {
+    } else if(data[phno_field.name].length>10){
       isValid=false;
-    }
-    else if(!emailId.test(data["emailaddress"]))
-    {
+    } else if(!data[email_field.name].endsWith("@college.edu")){
       isValid=false;
-    }
-    else if(data["department1"]==data["department2"])
-    {
+    } else if(special_chars.test(data[email_field.name])){
       isValid=false;
-    }
+    } else if(dept1_field.value===dept2_field.value){
+	    isValid=false;	
+	  }
 
     return isValid;
   };
 
-  var onSubmit = function(event) {
-    // 5. Figure out how to avoid the redirection on form submit
+  var onSubmit = function() {
 
+    event.preventDefault();
     var data = constructData();
+
+    //console.log(data);
 
     if (validateResults(data)) {
       printResults(data);
@@ -86,7 +90,6 @@
       resultsDiv.innerHTML = '';
       resultsDiv.classList.add("hide");
     }
-    event.preventDefault();
   };
 
   var printResults = function(data) {
